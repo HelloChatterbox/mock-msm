@@ -31,7 +31,7 @@ from typing import Dict, List
 from xdg import BaseDirectory
 from mock_msm.skill_entry import SkillEntry
 from mock_msm.skill_repo import SkillRepo
-from mock_msm.util import cached_property, MsmProcessLock
+from mock_msm.util import MsmProcessLock
 
 LOG = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class MycroftSkillsManager:
         """Completely clear the skills cache."""
         pass
 
-    @cached_property(ttl=ONE_DAY)
+    @property
     def all_skills(self):
         if self._all_skills is None:
             self._all_skills = self._get_all_skills()
@@ -120,34 +120,10 @@ class MycroftSkillsManager:
 
     @property
     def default_skills(self):
-        if self._default_skills is None:
-            default_skill_groups = self.list_all_defaults()
-            try:
-                default_skill_group = default_skill_groups[self.platform]
-            except KeyError:
-                LOG.error(
-                    'No default skill list found for platform "{}".  '
-                    'Using base list.'.format(self.platform)
-                )
-                default_skill_group = default_skill_groups.get('default', [])
-            self._default_skills = {s.name: s for s in default_skill_group}
-
-        return self._default_skills
+        return {}
 
     def list_all_defaults(self):  # type: () -> Dict[str, List[SkillEntry]]
-        """Generate dictionary of default skills in all default skill groups"""
-        all_skills = {skill.name: skill for skill in self.all_skills}
         default_skills = {group: [] for group in self.SKILL_GROUPS}
-
-        for group_name, skill_names in self.repo.get_default_skill_names():
-            group_skills = []
-            for skill_name in skill_names:
-                try:
-                    group_skills.append(all_skills[skill_name])
-                except KeyError:
-                    LOG.warning('No such default skill: ' + skill_name)
-            default_skills[group_name] = group_skills
-
         return default_skills
 
     def _init_skills_data(self):
@@ -190,11 +166,9 @@ class MycroftSkillsManager:
     def write_device_skill_state(self, data=None):
         pass
 
-    @save_device_skill_state
     def install(self, param, author=None, constraints=None, origin=''):
         raise NotImplementedError
 
-    @save_device_skill_state
     def remove(self, param, author=None):
         pass
 

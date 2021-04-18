@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='mock_msm',
-    version='0.9.0',
+    version='0.9.1',
     packages=['mock_msm'],
     url='https://github.com/MycroftAI/mycroft-skills-manager',
     license='Apache-2.0',
