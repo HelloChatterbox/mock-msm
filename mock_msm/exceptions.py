@@ -21,8 +21,6 @@
 # under the License.
 from contextlib import contextmanager
 
-from git import GitError
-
 
 class MsmException(Exception):
     def __repr__(self):
@@ -112,7 +110,7 @@ class MultipleSkillMatches(MsmException):
 def git_to_msm_exceptions():
     try:
         yield
-    except GitError as e:
+    except Exception as e:
         msg = getattr(e, 'stderr', str(e)).replace('stderr:', '').strip()
         if 'Authentication failed for' in msg:
             raise GitAuthException(msg) from e

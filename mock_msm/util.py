@@ -21,35 +21,16 @@
 # under the License.
 import time
 
-import git
-from os import chmod
-from os.path import exists, join
-from tempfile import gettempdir
 
-from fasteners.process_lock import InterProcessLock
+class MsmProcessLock:
+    def __init__(self, *args, **kwargs):
+        pass
 
+    def __enter__(self):
+        return self
 
-class Git(git.cmd.Git):
-    """Prevents asking for password for private repos"""
-    env = {'GIT_ASKPASS': 'echo'}
-
-    def __getattr__(self, item):
-        def wrapper(*args, **kwargs):
-            env = kwargs.pop('env', {})
-            env.update(self.env)
-            return super(Git, self).__getattr__(item)(*args, env=env, **kwargs)
-
-        return wrapper
-
-
-class MsmProcessLock(InterProcessLock):
-    def __init__(self):
-        lock_path = join(gettempdir(), 'msm_lock')
-        if not exists(lock_path):
-            lock_file = open(lock_path, '+w')
-            lock_file.close()
-            chmod(lock_path, 0o777)
-        super().__init__(lock_path)
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
 
 
 # The cached_property class defined below was copied from the
