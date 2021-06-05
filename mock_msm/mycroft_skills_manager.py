@@ -28,7 +28,8 @@ from glob import glob
 from os import path
 from typing import Dict, List
 
-from xdg import BaseDirectory
+from ovos_utils.skills import get_skills_folder
+
 from mock_msm.skill_entry import SkillEntry
 from mock_msm.skill_repo import SkillRepo
 from mock_msm.util import MsmProcessLock
@@ -54,8 +55,7 @@ class MycroftSkillsManager:
         # Keep this variable alive for a while, is used to move skills from the
         # old config based location to XDG
         self.old_skills_dir = path.expanduser(old_skills_dir or '') or None
-        self.skills_dir = (skills_dir or
-                           BaseDirectory.save_data_path('mycroft/skills'))
+        self.skills_dir = (skills_dir or get_skills_folder())
 
         self.repo = repo or SkillRepo()
         self.versioned = versioned
@@ -155,13 +155,7 @@ class MycroftSkillsManager:
         pass
 
     def _determine_skill_origin(self, skill):
-        if skill.name in self.default_skills:
-            origin = 'default'
-        elif skill.url:
-            origin = 'cli'
-        else:
-            origin = 'non-msm'
-        return origin
+        return 'non-msm'
 
     def write_device_skill_state(self, data=None):
         pass
